@@ -1,0 +1,26 @@
+{
+  "name": "imdone-stars",
+  "version": "0.0.0",
+  "description": "Track Technical Debt in most starred github projects",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imdone/imdone-stars.git"
+  },
+  "author": "Jesse Piascik",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/imdone/imdone-stars/issues"
+  },
+  "homepage": "https://github.com/imdone/imdone-stars",
+  "dependencies": {
+    "async": "^0.9.0",
+    "gift": "^0.6.0",
+    "github": "^0.2.4",
+    "lodash": "^3.8.0",
+    "prompt": "^0.2.14"
+  }
+}
