@@ -14,7 +14,16 @@
       "ARCHIVE"
     ]
   },
-  "lists": [],
+  "lists": [
+    {
+      "name": "todo",
+      "hidden": false
+    },
+    {
+      "name": "doing",
+      "hidden": false
+    }
+  ],
   "marked": {
     "gfm": true,
     "tables": true,
