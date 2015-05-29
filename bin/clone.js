@@ -118,7 +118,7 @@ var readReposFile = function(cb) {
   fs.readFile(reposFile, function (err, data) {
     if (err) return cb(err);
     cb(null, JSON.parse(data));
-  });  
+  });
 };
 
 var getRepoPath = function(repo) {
