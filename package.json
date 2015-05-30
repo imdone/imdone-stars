@@ -23,6 +23,7 @@
     "imdone-core": "^1.1.3",
     "lodash": "^3.8.0",
     "moment": "^2.10.3",
+    "mongojs": "^0.18.2",
     "progress": "^1.1.8",
     "prompt": "^0.2.14",
     "simple-git": "^1.3.0"

@@ -56,6 +56,7 @@ repo.on('initialized', function() {
     table.push([list.name, tasks.length]);
   });
   console.log(table.toString());
+  console.log(repo.serialize());
 });
 
 repo.fileStats(function(err, files) {
