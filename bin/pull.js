@@ -11,6 +11,24 @@ var db = mongojs('imdone-stars', ['pulls']);
 var pulls = db.collection('pulls');
 var now = new Date().getTime();
 var startAt = (process.argv.length > 2) && process.argv[2];
+var getUpdate = function(update) {
+  var _update;
+  if (update.files) {
+    _update = {
+      files: [],
+      summary: update.summary
+    }
+    update.files.forEach(function(file) {
+      var _file = { path: file.trim()};
+      if (update.insertions[file]) _file.insertions = update.insertions[file];
+      if (update.deletions[file]) _file.deletions = update.deletions[file];
+      _update.files.push(_file);
+    });
+  }
+
+  return _update;
+};
+
 repos.getRepos(function(err, _repos) {
   async.eachSeries(_repos, function(repo, cb) {
     if (startAt && repo.name !== startAt) {
@@ -19,7 +37,8 @@ repos.getRepos(function(err, _repos) {
     }
     startAt = false;
     if (!repos.exists(repo)) return cb(null, "repo: " + repo + " does not exist");
-    var imdoneRepo = new FsStore(new Repo(repos.getRepoPath(repo)));
+    var repoPath = repos.getRepoPath(repo);
+    var imdoneRepo = new FsStore(new Repo(repoPath));
     console.log("Initializing imdone with %s", repo.name);
     console.time(repo.name);
 
@@ -47,72 +66,54 @@ repos.getRepos(function(err, _repos) {
       }
     });
 
-    imdoneRepo.init(function(err, files) {
-      if (err) return cb(err);
-      process.stdout.write('\n');
+    console.log('git pull', repo.full_name);
+    git(repoPath).pull(function(err, update) {
+      if (err) console.log('pull failed:', err);
       var stats = {
         createdAt: now,
-        id: repo.id,
-        repo: repo.name,
+        github_id: repo.id,
+        repo_name: repo.full_name,
         lists: [],
-        files: []
+        files: [],
+        update: getUpdate(update)
       };
 
-      imdoneRepo.getLists().forEach(function(list) {
-        var tasks = imdoneRepo.getTasksInList(list.name);
-        var stat = {};
-        stat[list.name] = tasks.length;
-        stats.lists.push(stat);
-      });
+      imdoneRepo.init(function(err, files) {
+        if (err) return cb(err);
+        process.stdout.write('\n');
 
-      imdoneRepo.getFiles().forEach(function(file) {
-        var tasks = _.map(file.getTasks(), function(task) {
-          return _.pick(task, 'text', 'list', 'line');
+        imdoneRepo.getLists().forEach(function(list) {
+          var tasks = imdoneRepo.getTasksInList(list.name);
+          var stat = {};
+          stat[list.name] = tasks.length;
+          stats.lists.push(stat);
         });
-        if (tasks.length > 0) {
-          stats.files.push({
-            path: file.path,
-            tasks: tasks
+
+        imdoneRepo.getFiles().forEach(function(file) {
+          var tasks = _.map(file.getTasks(), function(task) {
+            return _.pick(task, 'text', 'list', 'line');
           });
-        }
+          if (tasks.length > 0) {
+            stats.files.push({
+              path: file.path,
+              tasks: tasks
+            });
+          }
+        });
+
+        pulls.insert(stats, function(err) {
+          if (err) {
+            console.log(err);
+            return cb(err);
+          }
+          console.timeEnd(repo.name);
+          cb(null, repo.name);
+        });
       });
 
-      pulls.insert(stats, function(err) {
-        if (err) {
-          console.log(err);
-          return cb(err);
-        }
-        console.timeEnd(repo.name);
-        cb(null, repo.name);
-      });
     });
   }, function(err, results) {
     if (err) console.log(err);
     process.exit();
   });
 });
-
-// git(repoPath).pull(function(err, update) {
-//   console.log('err:', err);
-//   console.log('update:', update);
-// update: { files:
-//    [ 'spec/text-editor-spec.coffee                      ',
-//      'src/lines-component.coffee                        ',
-//      'src/token.coffee                                  ',
-//      'src/tokenized-buffer.coffee                       ',
-//      'src/tokenized-line.coffee                         ' ],
-//   insertions:
-//    { 'spec/text-editor-spec.coffee                      ': 7,
-//      'src/lines-component.coffee                        ': 4,
-//      'src/token.coffee                                  ': 1,
-//      'src/tokenized-buffer.coffee                       ': 3,
-//      'src/tokenized-line.coffee                         ': 14 },
-//   deletions:
-//    { 'spec/text-editor-spec.coffee                      ': 394,
-//      'src/lines-component.coffee                        ': 154,
-//      'src/token.coffee                                  ': 198,
-//      'src/tokenized-buffer.coffee                       ': 193,
-//      'src/tokenized-line.coffee                         ': 559 },
-//   summary: { changes: 50, insertions: 1255, deletions: 952 } }
-
-// });

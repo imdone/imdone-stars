@@ -22,7 +22,8 @@ clones top repos and creates repos.json (Done)
 ### pull.js
 - pulls the latest of each repo and get's change stats
 - runs imdone to get task stats
-- Stores stats in mongo
+- Stores stats in mongo pulls collection
+- runs mapReduce on pulls collection and stores in repoStats collection
 
 ### index.js
 The webapp
