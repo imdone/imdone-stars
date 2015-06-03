@@ -39,7 +39,6 @@ repos.getRepos(function(err, _repos) {
     if (!repos.exists(repo)) return cb(null, "repo: " + repo + " does not exist");
     var repoPath = repos.getRepoPath(repo);
     var imdoneRepo = new FsStore(new Repo(repoPath));
-    console.log("Initializing imdone with %s", repo.name);
     console.time(repo.name);
 
     var listTicks = 1;
@@ -78,6 +77,7 @@ repos.getRepos(function(err, _repos) {
         update: getUpdate(update)
       };
 
+      console.log("Initializing imdone with %s", repo.name);
       imdoneRepo.init(function(err, files) {
         if (err) return cb(err);
         process.stdout.write('\n');

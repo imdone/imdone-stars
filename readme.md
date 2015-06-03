@@ -30,4 +30,9 @@ The webapp
 
 Display
 ----
-Use [nuvo-dashing-js](https://www.npmjs.com/package/nuvo-dashing-js)
+- Use [nuvo-dashing-js](https://www.npmjs.com/package/nuvo-dashing-js)
+- or... [Freeboard/freeboard](https://github.com/Freeboard/freeboard)
+
+Technical Debt
+----
+- [code quality - How can I quantify the amount of technical debt that exists in a project? - Programmers Stack Exchange](http://programmers.stackexchange.com/questions/135993/how-can-i-quantify-the-amount-of-technical-debt-that-exists-in-a-project)
