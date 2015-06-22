@@ -3,7 +3,6 @@ var Repo    = require('imdone-core/lib/repository'),
     async   = require('async'),
     _       = require('lodash'),
     FsStore = require('imdone-core/lib/mixins/repo-fs-store'),
-    git     = require('simple-git'),
     moment  = require('moment'),
     mongojs = require('mongojs');
 
@@ -11,23 +10,6 @@ var db = mongojs('imdone-stars', ['pulls']);
 var pulls = db.collection('pulls');
 var now = new Date().getTime();
 var startAt = (process.argv.length > 2) && process.argv[2];
-var getUpdate = function(update) {
-  var _update;
-  if (update.files) {
-    _update = {
-      files: [],
-      summary: update.summary
-    }
-    update.files.forEach(function(file) {
-      var _file = { path: file.trim()};
-      if (update.insertions[file]) _file.insertions = update.insertions[file];
-      if (update.deletions[file]) _file.deletions = update.deletions[file];
-      _update.files.push(_file);
-    });
-  }
-
-  return _update;
-};
 
 repos.getRepos(function(err, _repos) {
   async.eachSeries(_repos, function(repo, cb) {
@@ -66,50 +48,52 @@ repos.getRepos(function(err, _repos) {
     });
 
     console.log('git pull', repo.full_name);
-    git(repoPath).pull(function(err, update) {
+    repo.pull(function(err) {
       if (err) console.log('pull failed:', err);
-      var stats = {
-        createdAt: now,
-        github_id: repo.id,
-        repo_name: repo.full_name,
-        lists: [],
-        files: [],
-        update: getUpdate(update)
-      };
+      console.log(update);
+      // var stats = {
+      //   createdAt: now,
+      //   github_id: repo.id,
+      //   repo_name: repo.full_name,
+      //   lists: [],
+      //   files: [],
+      //   update: getUpdate(update)
+      // };
 
-      console.log("Initializing imdone with %s", repo.name);
-      imdoneRepo.init(function(err, files) {
-        if (err) return cb(err);
-        process.stdout.write('\n');
+      // console.log("Initializing imdone with %s", repo.name);
+      // imdoneRepo.init(function(err, files) {
+      //   if (err) return cb(err);
+      //   process.stdout.write('\n');
+      //
+      //   imdoneRepo.getLists().forEach(function(list) {
+      //     var tasks = imdoneRepo.getTasksInList(list.name);
+      //     var stat = {};
+      //     stat[list.name] = tasks.length;
+      //     stats.lists.push(stat);
+      //   });
+      //
+      //   imdoneRepo.getFiles().forEach(function(file) {
+      //     var tasks = _.map(file.getTasks(), function(task) {
+      //       return _.pick(task, 'text', 'list', 'line');
+      //     });
+      //     if (tasks.length > 0) {
+      //       stats.files.push({
+      //         path: file.path,
+      //         tasks: tasks
+      //       });
+      //     }
+      //   });
 
-        imdoneRepo.getLists().forEach(function(list) {
-          var tasks = imdoneRepo.getTasksInList(list.name);
-          var stat = {};
-          stat[list.name] = tasks.length;
-          stats.lists.push(stat);
-        });
-
-        imdoneRepo.getFiles().forEach(function(file) {
-          var tasks = _.map(file.getTasks(), function(task) {
-            return _.pick(task, 'text', 'list', 'line');
-          });
-          if (tasks.length > 0) {
-            stats.files.push({
-              path: file.path,
-              tasks: tasks
-            });
-          }
-        });
-
-        pulls.insert(stats, function(err) {
-          if (err) {
-            console.log(err);
-            return cb(err);
-          }
-          console.timeEnd(repo.name);
+        console.timeEnd(repo.name);
+        // pulls.insert(stats, function(err) {
+        //   if (err) {
+        //     console.log(err);
+        //     return cb(err);
+        //   }
+        //   console.timeEnd(repo.name);
           cb(null, repo.name);
-        });
-      });
+        // });
+      // });
 
     });
   }, function(err, results) {

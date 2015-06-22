@@ -22,6 +22,14 @@
     {
       "name": "doing",
       "hidden": false
+    },
+    {
+      "name": "DOING",
+      "hidden": false
+    },
+    {
+      "name": "DONE",
+      "hidden": false
     }
   ],
   "marked": {

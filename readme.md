@@ -16,13 +16,20 @@ Stories
 
 Architecture
 ----
-### clone.js
-clones top repos and creates repos.json (Done)
+### db.js
+- manages db connection
 
-### pull.js
-- pulls the latest of each repo and get's change stats
+### bin/clone.js #DOING:0 Use [[lib/repos.js]] for cloning
+- clones top repos and creates repos.json if it doesn't exist (Done)
+- uses repos.json if it exists
+
+### bin/pull.js
+- pulls the latest of each repo
+
+### bin/stats.js
+- Gets a log of commits for repos going back up to a year
 - runs imdone to get task stats
-- Stores stats in mongo pulls collection
+- Stores stats in mongo pulls collection including the hash and timestamp of commit
 - runs mapReduce on pulls collection and stores in repoStats collection
 
 ### index.js
@@ -36,3 +43,4 @@ Display
 Technical Debt
 ----
 - [code quality - How can I quantify the amount of technical debt that exists in a project? - Programmers Stack Exchange](http://programmers.stackexchange.com/questions/135993/how-can-i-quantify-the-amount-of-technical-debt-that-exists-in-a-project)
+- [How to Calculate Technical Debt - Deloitte CIO - WSJ](http://deloitte.wsj.com/cio/2015/01/21/how-to-calculate-technical-debt/)
