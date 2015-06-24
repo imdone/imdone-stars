@@ -45,18 +45,31 @@ repo.on('file.read', function(data) {
 });
 
 var table = new Table({
-    head: ['List', 'tasks']
+    head: ['List', 'Tasks']
   , colWidths: [20, 20]
 });
+
+var files_table = new Table({
+  head: ['File', 'Tasks'],
+  colWidths: [80,20]
+})
 
 repo.on('initialized', function() {
   console.log(moment().diff(start, 'seconds'));
   repo.getLists().forEach(function(list) {
     var tasks = repo.getTasksInList(list.name);
     table.push([list.name, tasks.length]);
+    var files = repo.getFiles();
+    files.forEach(function(file) {
+      var tasks = file.getTasks();
+      if (tasks.length > 0) {
+        files_table.push([file.getPath(), tasks.length]);
+      }
+    })
   });
   console.log(table.toString());
-  console.log(repo.serialize());
+  console.log(files_table.toString());
+  // console.log(repo.serialize());
 });
 
 repo.fileStats(function(err, files) {
