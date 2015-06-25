@@ -19,7 +19,7 @@ Architecture
 ### db.js
 - manages db connection
 
-### bin/clone.js #DOING:0 Use [[lib/repos.js]] for cloning
+### bin/clone.js #DOING:20 Use [[lib/repos.js]] for cloning
 - clones top repos and creates repos.json if it doesn't exist (Done)
 - uses repos.json if it exists
 

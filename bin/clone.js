@@ -1,4 +1,4 @@
-// #DOING:0 Move to lib/repos.js
+// #DOING:10 Move to lib/repos.js
 var async = require('async'),
     repos = require('../lib/repos');
     git   = require('simple-git')(__dirname);
