@@ -67,8 +67,9 @@ repo.on('initialized', function() {
       }
     })
   });
-  console.log(table.toString());
   console.log(files_table.toString());
+  console.log(table.toString());
+  console.log(files_table.length);
   // console.log(repo.serialize());
 });
 
